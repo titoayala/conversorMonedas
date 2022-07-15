@@ -1,0 +1,33 @@
+body{
+    color: white !important;
+}
+
+.container-fluid {
+    margin-top: 5%;
+    width: 50% !important;
+    height: 33vw;
+    background-color:rgb(53, 53, 53);
+}
+
+.row{
+    text-align: center;
+    justify-content: center;
+}
+
+
+hr{
+    color:aqua !important;
+}
+
+.card{
+    background-color: rgb(166, 173, 173) !important;
+}
+
+.card-body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.form-select{
+    margin-bottom: 5%;
+}
