@@ -31,3 +31,9 @@ hr{
 .form-select{
     margin-bottom: 5%;
 }
+
+#monedaConvertida{
+    margin-top: 5%;
+    font-size: x-large;
+    font-weight: bold;
+}
