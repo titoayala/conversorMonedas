@@ -2,7 +2,6 @@ const pesos = document.querySelector("#inputClp")
 const monedaSeleccionada = document.querySelector("#monedaSeleccionada")
 const boton = document.querySelector("#boton")
 const monedaConvertida = document.querySelector("#monedaConvertida")
-const miGrafico = document.querySelector("#miGrafico")
 const apiUrl = "https://mindicador.cl/api" //ENDPOINT PRINCIPAL
 
 async function obtenerMonedas(url) {
@@ -29,7 +28,6 @@ async function renderConvierteMonedas() {
             style: "currency",
             currency: tipoMoneda //SE COLOCA PARA QUE SALGA EL SIGNO MONETARIO CORRESPONDIENTE
         }).format((pesos.value / monedas[monedaSeleccionada.value].valor).toFixed(2))}` //REDONDEA A DOS DECIMALES
-        renderGrafica()
     }
     catch (error) {
         alert("Seleccione Moneda a convertir")
@@ -43,34 +41,44 @@ boton.addEventListener("click", () => {
         return
     }
     renderConvierteMonedas() //LLAMADO A FUNCION PRINCIPAL
+    graficoTotal();
 })
 
-async function cargaDatosParaGrafico() {
-    const urlParaGrafico = await obtenerMonedas(apiUrl + "/" + monedaSeleccionada.value)
-    console.log(urlParaGrafico) //NUEVO ENDPOINT PARA DATOS HISTORICOS
-    const fechasEjeX = urlParaGrafico.serie.map((dato) => {
-        return dato.fecha.split("T")[0]
-    })
-    const valoresMonedaEjeY = urlParaGrafico.serie.map((dato) => {
-        return Number(dato.valor)
-    })
+function graficoTotal() {
+    async function cargaDatosParaGrafico() {
+        const urlGrafico = await fetch(apiUrl + "/" + monedaSeleccionada.value);
+        const datosGrafico = await urlGrafico.json();
 
-    const ejeY = [
-        {
-            label: monedaSeleccionada.value,
-            borderColor: "rgb(255, 99, 132)",
-            valoresMonedaEjeY
-        }
-    ]
-    return { fechasEjeX, ejeY }
-}
+        const labels = datosGrafico.serie.map((ejeX) => {
+            return ejeX.fecha.split("T")[0];
+        });
 
-async function renderGrafica() {
-    const grafico = await cargaDatosParaGrafico()
-    const config = {
-        type: "line",
-        grafico
+        const data = datosGrafico.serie.map((ejeY) => {
+            const valorEjeY = ejeY.valor;
+            return Number(valorEjeY);
+        });
+
+        const datasets = [
+            {
+                label: "Historial últimos 31 días " + monedaSeleccionada.value,
+                borderColor: "rgb(255, 99, 132)",
+                data
+            }
+        ];
+        return { labels, datasets };
     }
-    miGrafico.style.backgroundColor = "white";
-    new Chart(miGrafico, config);
+
+    async function renderGrafica() {
+        const data = await cargaDatosParaGrafico();
+
+        const config = {
+            type: "line",
+            data
+        };
+
+        const myChart = document.querySelector("#myChart");
+        myChart.style.backgroundColor = "white";
+        new Chart(myChart, config);
+    }
+    renderGrafica();
 }
