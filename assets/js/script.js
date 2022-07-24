@@ -2,6 +2,8 @@ const pesos = document.querySelector("#inputClp")
 const monedaSeleccionada = document.querySelector("#monedaSeleccionada")
 const boton = document.querySelector("#boton")
 const monedaConvertida = document.querySelector("#monedaConvertida")
+const miGraf = document.querySelector("#myChart")
+let myChart //VARIABLE CONTENEDORA PARA ACTUALIZAR EL GRAFICO
 const apiUrl = "https://mindicador.cl/api" //ENDPOINT PRINCIPAL
 
 async function obtenerMonedas(url) {
@@ -44,41 +46,48 @@ boton.addEventListener("click", () => {
     graficoTotal();
 })
 
-function graficoTotal() {
+function graficoTotal() { //ADAPTADO DESDE LOS EJERCICIOS VISTOS EN CLASE.
     async function cargaDatosParaGrafico() {
-        const urlGrafico = await fetch(apiUrl + "/" + monedaSeleccionada.value);
-        const datosGrafico = await urlGrafico.json();
+        try {
+            const urlGrafico = await fetch(apiUrl + "/" + monedaSeleccionada.value); //NUEVO ENDPOINT PARA DATOS HISTORICOS
+            const datosGrafico = await urlGrafico.json()
 
-        const labels = datosGrafico.serie.map((ejeX) => {
-            return ejeX.fecha.split("T")[0];
-        });
+            const labels = datosGrafico.serie.map((ejeX) => {
+                return ejeX.fecha.split("T")[0]; //METODO SPLIT DIVIDE LA CADENA DE TEXTO HASTA LA T Y OBVIA EL RESTO
+            })
 
-        const data = datosGrafico.serie.map((ejeY) => {
-            const valorEjeY = ejeY.valor;
-            return Number(valorEjeY);
-        });
+            const data = datosGrafico.serie.map((ejeY) => {
+                const valorEjeY = ejeY.valor
+                return Number(valorEjeY)
+            })
 
-        const datasets = [
-            {
-                label: "Historial últimos 31 días " + monedaSeleccionada.value,
-                borderColor: "rgb(255, 99, 132)",
-                data
-            }
-        ];
-        return { labels, datasets };
+            const datasets = [
+                {
+                    label: "Historial últimos 31 días " + monedaSeleccionada.value,
+                    borderColor: "rgb(255, 99, 132)",
+                    data
+                }
+            ]
+            return { labels, datasets }
+        } catch (error) {
+            alert("No se puedieron cargar los datos para el gráfico!")
+        }
     }
 
     async function renderGrafica() {
-        const data = await cargaDatosParaGrafico();
+        const data = await cargaDatosParaGrafico()
 
         const config = {
             type: "line",
             data
         };
+        miGraf.style.backgroundColor = "white"
 
-        const myChart = document.querySelector("#myChart");
-        myChart.style.backgroundColor = "white";
-        new Chart(myChart, config);
+        if (myChart) {
+            myChart.destroy(); //FUNCION PARA ACTUALIZAR EL GRAFICO SI SE CAMBIA EL TIPO DE MONEDA
+        }
+        myChart = new Chart(miGraf, config)
     }
-    renderGrafica();
+
+    renderGrafica()
 }
