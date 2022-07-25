@@ -52,22 +52,24 @@ function graficoTotal() { //ADAPTADO DESDE LOS EJERCICIOS VISTOS EN CLASE.
             const urlGrafico = await fetch(apiUrl + "/" + monedaSeleccionada.value); //NUEVO ENDPOINT PARA DATOS HISTORICOS
             const datosGrafico = await urlGrafico.json()
 
-            const labels = datosGrafico.serie.map((ejeX) => {
-                return ejeX.fecha.split("T")[0]; //METODO SPLIT DIVIDE LA CADENA DE TEXTO HASTA LA T Y OBVIA EL RESTO
+            const label = datosGrafico.serie.map((ejeX) => {
+                return ejeX.fecha.split("T")[0]; //METODO SPLIT DIVIDE LA CADENA DE TEXTO HASTA LA "T" Y OBVIA EL RESTO
             })
+            const labels = label.reverse().splice(-10)
 
-            const data = datosGrafico.serie.map((ejeY) => {
+            const datosY = datosGrafico.serie.map((ejeY) => {
                 const valorEjeY = ejeY.valor
                 return Number(valorEjeY)
             })
-
+            const data = datosY.reverse().splice(-10)
             const datasets = [
                 {
-                    label: "Historial últimos 31 días " + monedaSeleccionada.value,
+                    label: "Historial últimos 10 días " + monedaSeleccionada.value,
                     borderColor: "rgb(255, 99, 132)",
                     data
                 }
             ]
+
             return { labels, datasets }
         } catch (error) {
             alert("No se puedieron cargar los datos para el gráfico!")
