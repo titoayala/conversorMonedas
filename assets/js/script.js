@@ -19,7 +19,7 @@ async function obtenerMonedas(url) {
 
 async function renderConvierteMonedas() {
     try {
-        const monedas = await obtenerMonedas(apiUrl);
+        const monedas = await obtenerMonedas(apiUrl)
         let tipoMoneda = "" //SE DEFINE PARA USARLA EN FORMATEO NUMERICO EN LA LINEA 38
         if (monedas[monedaSeleccionada.value].codigo === "dolar") {
             tipoMoneda = "USD"
@@ -43,7 +43,7 @@ boton.addEventListener("click", () => {
         return
     }
     renderConvierteMonedas() //LLAMADO A FUNCION PRINCIPAL
-    graficoTotal();
+    graficoTotal()
 })
 
 function graficoTotal() { //ADAPTADO DESDE LOS EJERCICIOS VISTOS EN CLASE.
@@ -55,7 +55,7 @@ function graficoTotal() { //ADAPTADO DESDE LOS EJERCICIOS VISTOS EN CLASE.
             const label = datosGrafico.serie.map((ejeX) => {
                 return ejeX.fecha.split("T")[0]; //METODO SPLIT DIVIDE LA CADENA DE TEXTO HASTA LA "T" Y OBVIA EL RESTO
             })
-            const labels = label.reverse().splice(-10)
+            const labels = label.reverse().splice(-10) //ORDENA EL EJE X DE IZQUIERDA A DERECHA, DE MENOR A MAYOR Y MUESTRA LOS ULTIMOS 10 DATOS
 
             const datosY = datosGrafico.serie.map((ejeY) => {
                 const valorEjeY = ejeY.valor
